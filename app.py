@@ -10,6 +10,49 @@ df['date'] = pd.to_datetime(df['date'], errors='coerce')
 df['month'] = df['date'].dt.month
 df['year'] = df['date'].dt.year
 
+def load_startup_details(company):
+    st.title(company)
+    
+    # Find company category
+    filtered_df = df.loc[df['startup'] == company, 'vertical']
+    
+    if not filtered_df.empty:
+        category = filtered_df.iloc[0]
+        st.metric(label="Category", value=category)
+
+    filtered_subcategory = df.loc[df['startup']==company,'subvertical'] 
+    if not filtered_subcategory.empty:
+        subcategory = filtered_subcategory.iloc[0]
+        st.metric(label='Subcategory',value=subcategory)
+
+    filtered_city = df.loc[df['startup']==company,'city'] 
+    if not filtered_city.empty:
+        city_startup = filtered_city.iloc[0]
+        st.metric(label='City',value=city_startup) 
+
+    filtered_round =  df.loc[df['startup'] == 'Mamaearth', ['round', 'investors', 'date']].reset_index(drop=True)
+    if not filtered_round.empty:
+        st.dataframe(filtered_round)
+
+       
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def load_overall_analysis():
     st.title('Overall Analysis')
@@ -127,10 +170,10 @@ if option == 'Overall Analysis':
     load_overall_analysis()
 elif option == 'Startup':
     selected_startup = st.sidebar.selectbox('Select Startup', sorted(df['startup'].unique().tolist()))
-    st.title('Startup Analysis')
     btn1 = st.sidebar.button('Find Startup Details')
     if btn1:
-        st.write(f"Details for startup: {selected_startup}")
+        load_startup_details(selected_startup)
+
 else:
     selected_investor = st.sidebar.selectbox('Select Investor', sorted(set(df['investors'].str.split(',').sum())))
     btn2 = st.sidebar.button('Find Investor Details')
